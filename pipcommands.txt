@@ -1,0 +1,28 @@
+🔹 ძირითადი ბრძანებები
+pip install package_name — პაკეტის დაყენება
+pip uninstall package_name — პაკეტის წაშლა
+pip install -r requirements.txt — ფაილიდან პაკეტების დაყენება
+pip freeze — დაყენებული პაკეტების სია (ვერსიებით)
+🔹 განახლება და ვერსიები
+pip install --upgrade package_name — პაკეტის განახლება
+pip list — ყველა დაყენებული პაკეტის ნახვა
+pip show package_name — კონკრეტული პაკეტის დეტალები
+pip check — დამოკიდებულებების (dependencies) შემოწმება
+🔹 ძიება და ინფორმაცია
+pip search keyword — პაკეტების ძიება (შენიშვნა: ხშირად აღარ მუშაობს ახალ ვერსიებში)
+pip index versions package_name — პაკეტის ხელმისაწვდომი ვერსიები
+🔹 ქეშთან მუშაობა
+pip cache dir — cache-ის მდებარეობა
+pip cache list — cache-ში არსებული ფაილები
+pip cache purge — cache-ის გასუფთავება
+🔹 გარემო (environment) და კონფიგურაცია
+pip config list — კონფიგურაციის ნახვა
+pip config set global.index-url URL — repository-ის შეცვლა
+pip debug — debug ინფორმაცია
+🔹 wheel და build
+pip wheel package_name — wheel ფაილის შექმნა
+pip download package_name — პაკეტის გადმოწერა დაყენების გარეშე
+🔹 სხვა სასარგებლო
+pip help — დახმარება
+pip help install — კონკრეტული ბრძანების დახმარება
+pip --version — pip-ის ვერსია

@@ -1,0 +1,61 @@
+    
+    
+    check
+    compilemessages
+    createcachetable
+    dbshell
+    diffsettings
+    dumpdata
+    flush
+    inspectdb
+    loaddata
+    makemessages
+    makemigrations
+    migrate
+    optimizemigration
+    runserver
+    sendtestemail
+    shell
+    showmigrations
+    sqlflush
+    sqlmigrate
+    sqlsequencereset
+    squashmigrations
+    startapp
+    startproject
+    test
+    testserver
+
+
+
+🔹 პროექტთან დაკავშირებული
+django-admin startproject project_name — ახალი პროექტის შექმნა
+django-admin startapp app_name — ახალი app-ის შექმნა
+🔹 მონაცემთა ბაზა / migrations
+django-admin makemigrations — ცვლილებების დაფიქსირება
+django-admin migrate — ბაზაში ცვლილებების გამოყენება
+django-admin showmigrations — migrations-ის სია
+django-admin sqlmigrate app_name migration_name — SQL-ის ნახვა
+🔹 მომხმარებლები და auth
+django-admin createsuperuser — ადმინის შექმნა
+django-admin changepassword username — პაროლის შეცვლა
+🔹 სერვერი და shell
+django-admin runserver — სერვერის გაშვება
+django-admin shell — Python shell Django context-ით
+🔹 სტატიკური ფაილები
+django-admin collectstatic — static ფაილების შეგროვება
+🔹 localization / თარგმნა
+django-admin makemessages — თარგმნის ფაილების შექმნა
+django-admin compilemessages — თარგმნის კომპილაცია
+🔹 cache / clean
+django-admin clearsessions — სესიების გაწმენდა
+🔹 templates და config
+django-admin diffsettings — settings-ის შედარება default-თან
+django-admin check — პროექტის შემოწმება
+🔹 dump / load მონაცემები
+django-admin dumpdata — მონაცემების ექსპორტი
+django-admin loaddata — მონაცემების იმპორტი
+🔹 სხვა
+django-admin help — ყველა ბრძანების სია
+django-admin help command_name — კონკრეტული ბრძანების დახმარება
+django-admin version — Django ვერსია
