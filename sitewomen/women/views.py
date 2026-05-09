@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
-from women.models import Women, Category, TagPost
+from women.models import Husband, Women, Category, TagPost
 
 def add_in_db(title, content):
     obj, created = Women.objects.get_or_create(
@@ -106,6 +106,13 @@ def index(request):
     a.tags.remove(tag_o)
 
     a.tags.add(tag_br[0])
+
+
+    print('########################################')
+    # husband = Husband.objects.get(pk=4)
+    # wum = Women.objects.get(pk=1)
+    # wum.husband = husband
+    # wum.save()
     return render(request, "women/index.html", context=data)
 
 
@@ -144,6 +151,17 @@ def show_category(request, cat_slug):
         "menu": menu,
         "posts": posts,
         "cat_selected": category.pk,
+    }
+    return render(request, "women/index.html", context=data)
+
+def show_tag_postlist(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+    data = {
+        "title": f"Тег {tag.tag} ",
+        "menu": menu,
+        "posts": posts,
+        "cat_selected": None,
     }
     return render(request, "women/index.html", context=data)
 
