@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F, Q, Count, Case, When, Value, IntegerField
 from django.urls import reverse
 
 
@@ -65,6 +66,7 @@ class TagPost(models.Model):
 class Husband(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     age = models.IntegerField(null=True)
+    m_count = models.IntegerField(blank=True, default=0)
 
     def __str__(self):
         return self.name

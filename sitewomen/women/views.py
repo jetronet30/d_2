@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
+from django.db.models import Avg, Max, Min, Sum
 
 from women.models import Husband, Women, Category, TagPost
 
@@ -113,6 +114,20 @@ def index(request):
     # wum = Women.objects.get(pk=1)
     # wum.husband = husband
     # wum.save()
+
+    early = Women.objects.all().earliest("time_update")
+    print(early)
+
+    # Husband.objects.update(m_count=F('m_count') + 1)
+    # husband = Husband.objects.get(pk=3)
+    # husband.age = 23
+    # husband.save()
+    # husband = Husband.objects.get(pk=4)
+    # husband.age = 24
+    # husband.save()
+    #print(Husband.objects.aggregate(Min("age")), Max("age"), Avg("age"), Sum("age"))
+    print(Husband.objects.aggregate(res = Max("age") - Min("age")))
+    print(Women.objects.values('title','cat_id'))
     return render(request, "women/index.html", context=data)
 
 
