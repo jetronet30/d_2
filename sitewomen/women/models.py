@@ -13,14 +13,14 @@ class Women(models.Model):
         DRAFT = 0, "Draft"
         PUBLISHED = 1, "Published"
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Заголовок")
     content = models.TextField(blank=True)
-    slug = models.SlugField(max_length=255, db_index=True, unique=True)
+    slug = models.SlugField(max_length=255, db_index=True, unique=True, verbose_name="SLUG")
     time_create = models.DateTimeField(
         auto_now_add=True
     )  # მხოლოდ  პირველი აძლევს  და  მერე  არ ანახლებს
     time_update = models.DateTimeField(auto_now=True)  # ყოველთვის   ანახლებს
-    is_published = models.BooleanField(choices=Status.choices, default=Status.PUBLISHED)
+    is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)), default=Status.PUBLISHED)
     cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts")
     tags = models.ManyToManyField("TagPost", blank=True, related_name="tags")
     husband = models.OneToOneField("Husband", on_delete=models.SET_NULL, null=True, blank=True, related_name="wum")
@@ -32,6 +32,8 @@ class Women(models.Model):
         return self.title
 
     class Meta:
+        verbose_name = "Выдающиеся женщины"
+        verbose_name_plural = "Выдающиеся женщины"
         ordering = ["-time_create"]
         indexes = [
             models.Index(fields=["-time_create"]),
@@ -50,6 +52,10 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse("category", kwargs={"cat_slug": self.slug})
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ["id"]
 
 
 class TagPost(models.Model):

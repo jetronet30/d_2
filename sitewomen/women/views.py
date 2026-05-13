@@ -29,27 +29,7 @@ menu = [
     {"title": "Войти", "url_name": "login"},
 ]
 
-data_db = [
-    {
-        "id": 1,
-        "title": "Анджелина Джоли",
-        "content": """<h1>Анджелина Джоли</h1> (англ. Angelina Jolie[7], при рождении Войт (англ. Voight), ранее Джоли Питт (англ. Jolie Pitt); род. 4 июня 1975, Лос-Анджелес, Калифорния, США) — американская актриса кино, телевидения и озвучивания, кинорежиссёр, сценаристка, продюсер, фотомодель, посол доброй воли ООН.
-    Обладательница премии «Оскар», трёх премий «Золотой глобус» (первая актриса в истории, три года подряд выигравшая премию) и двух «Премий Гильдии киноактёров США».""",
-        "is_published": True,
-    },
-    {
-        "id": 2,
-        "title": "Марго Робби",
-        "content": "Биография Марго Робби",
-        "is_published": False,
-    },
-    {
-        "id": 3,
-        "title": "Джулия Робертс",
-        "content": "Биография Джулия Робертс",
-        "is_published": True,
-    },
-]
+
 
 cats_db = [
     {
@@ -76,47 +56,47 @@ def index(request):
     # for w in Women.objects.all():
     #     w.slug = 'slug-' + str(w.id)
     #     w.save()
-    posts = Women.published.all()
+    posts = Women.published.all().select_related('cat')
     data = {
         "title": "Главная страница",
         "menu": menu,
         "posts": posts,
         "cat_selected": 0,
     }
-    cats = Category.objects.all()
-    name = Women.objects.filter(cat_id__in=cats)
-    c = Category.objects.get(pk=1)
+    # cats = Category.objects.all()
+    # name = Women.objects.filter(cat_id__in=cats)
+    # c = Category.objects.get(pk=1)
     
-    print(name, c.posts.filter(is_published=1))
+    # print(name, c.posts.filter(is_published=1))
 
-    print('########################################')
+    # print('########################################')
 
-    print(Women.objects.filter(cat__slug='aktrisy'))
-
-
-    print('########################################')
-
-    a = Women.objects.get(pk=1)
-    tag_br = TagPost.objects.all()
-    print(tag_br)
-
-    tag_o, tag_v =TagPost.objects.filter(id__in=[3, 5])
-
-    a.tags.set([tag_o, tag_v, tag_br[0]])
-
-    a.tags.remove(tag_o)
-
-    a.tags.add(tag_br[0])
+    # print(Women.objects.filter(cat__slug='aktrisy'))
 
 
-    print('########################################')
-    # husband = Husband.objects.get(pk=4)
-    # wum = Women.objects.get(pk=1)
-    # wum.husband = husband
-    # wum.save()
+    # print('########################################')
 
-    early = Women.objects.all().earliest("time_update")
-    print(early)
+    # a = Women.objects.get(pk=1)
+    # tag_br = TagPost.objects.all()
+    # print(tag_br)
+
+    # tag_o, tag_v =TagPost.objects.filter(id__in=[3, 5])
+
+    # a.tags.set([tag_o, tag_v, tag_br[0]])
+
+    # a.tags.remove(tag_o)
+
+    # a.tags.add(tag_br[0])
+
+
+    # print('########################################')
+    # # husband = Husband.objects.get(pk=4)
+    # # wum = Women.objects.get(pk=1)
+    # # wum.husband = husband
+    # # wum.save()
+
+    # early = Women.objects.all().earliest("time_update")
+    # print(early)
 
     # Husband.objects.update(m_count=F('m_count') + 1)
     # husband = Husband.objects.get(pk=3)
@@ -126,8 +106,8 @@ def index(request):
     # husband.age = 24
     # husband.save()
     #print(Husband.objects.aggregate(Min("age")), Max("age"), Avg("age"), Sum("age"))
-    print(Husband.objects.aggregate(res = Max("age") - Min("age")))
-    print(Women.objects.values('title','cat_id'))
+    # print(Husband.objects.aggregate(res = Max("age") - Min("age")))
+    # print(Women.objects.values('title','cat_id'))
     return render(request, "women/index.html", context=data)
 
 
@@ -160,7 +140,7 @@ def login(request):
 
 def show_category(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk)
+    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
     data = {
         "title": f"Категория {category.name} ",
         "menu": menu,
@@ -171,7 +151,7 @@ def show_category(request, cat_slug):
 
 def show_tag_postlist(request, tag_slug):
     tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related('cat')
     data = {
         "title": f"Тег {tag.tag} ",
         "menu": menu,
