@@ -4,11 +4,11 @@ html, body {
 	padding: 0;
 	height: 100%;
 	width: 100%;
-	color: #030303;
+	color: #444;
 }
 
 a {
-	color: #0fb200;
+	color: #0059b2;
 	text-decoration: none;
 }
 a:hover {
@@ -91,7 +91,7 @@ ul.mainmenu {
 	margin: 0;
 	padding: 0;
 	height: 60px;
-	color: #613705;
+	color: #fdc073;
 	font-size: 20px;
 	overflow: hidden;
 }

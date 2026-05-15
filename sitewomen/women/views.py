@@ -1,133 +1,63 @@
-from django.http import (
-    HttpResponse,
-    HttpResponseNotFound,
-    Http404,
-    HttpResponseRedirect,
-    HttpResponsePermanentRedirect,
-)
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
-from django.db.models import Avg, Max, Min, Sum
 
-from women.models import Husband, Women, Category, TagPost
+from women.forms import AddPostForm
 
-def add_in_db(title, content):
-    obj, created = Women.objects.get_or_create(
-        title=title,
-        defaults={'content': content}
-    )
-    #Women.objects.filter(title=title).exists()
- 
-    return obj, created
+from .models import Women, Category, TagPost
 
-menu = [
-    {"title": "О сайте", "url_name": "about"},
-    {"title": "Добавить статью", "url_name": "add_page"},
-    {"title": "Обратная связь", "url_name": "contact"},
-    {"title": "Войти", "url_name": "login"},
+menu = [{'title': "О сайте", 'url_name': 'about'},
+        {'title': "Добавить статью", 'url_name': 'add_page'},
+        {'title': "Обратная связь", 'url_name': 'contact'},
+        {'title': "Войти", 'url_name': 'login'}
 ]
-
-
-
-cats_db = [
-    {
-        "id": 1,
-        "name": "Актрисы",
-        "slug": "aktrisy",
-    },
-    {
-        "id": 2,
-        "name": "Сценаристы",
-        "slug": "scenaristy",
-    },
-    {
-        "id": 3,
-        "name": "Режиссёры",
-        "slug": "rezhissery",
-    },
-]
-
 
 
 def index(request):
-    # add_in_db("Orlado Bloom", "Orlado Bloom")
-    # for w in Women.objects.all():
-    #     w.slug = 'slug-' + str(w.id)
-    #     w.save()
     posts = Women.published.all().select_related('cat')
+
     data = {
-        "title": "Главная страница",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": 0,
+        'title': 'Главная страница',
+        'menu': menu,
+        'posts': posts,
+        'cat_selected': 0,
     }
-    # cats = Category.objects.all()
-    # name = Women.objects.filter(cat_id__in=cats)
-    # c = Category.objects.get(pk=1)
-    
-    # print(name, c.posts.filter(is_published=1))
-
-    # print('########################################')
-
-    # print(Women.objects.filter(cat__slug='aktrisy'))
-
-
-    # print('########################################')
-
-    # a = Women.objects.get(pk=1)
-    # tag_br = TagPost.objects.all()
-    # print(tag_br)
-
-    # tag_o, tag_v =TagPost.objects.filter(id__in=[3, 5])
-
-    # a.tags.set([tag_o, tag_v, tag_br[0]])
-
-    # a.tags.remove(tag_o)
-
-    # a.tags.add(tag_br[0])
-
-
-    # print('########################################')
-    # # husband = Husband.objects.get(pk=4)
-    # # wum = Women.objects.get(pk=1)
-    # # wum.husband = husband
-    # # wum.save()
-
-    # early = Women.objects.all().earliest("time_update")
-    # print(early)
-
-    # Husband.objects.update(m_count=F('m_count') + 1)
-    # husband = Husband.objects.get(pk=3)
-    # husband.age = 23
-    # husband.save()
-    # husband = Husband.objects.get(pk=4)
-    # husband.age = 24
-    # husband.save()
-    #print(Husband.objects.aggregate(Min("age")), Max("age"), Avg("age"), Sum("age"))
-    # print(Husband.objects.aggregate(res = Max("age") - Min("age")))
-    # print(Women.objects.values('title','cat_id'))
-    return render(request, "women/index.html", context=data)
+    return render(request, 'women/index.html', context=data)
 
 
 def about(request):
-    return render(request, "women/about.html", {"title": "О сайте", "menu": menu})
+    return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu})
 
 
 def show_post(request, post_slug):
     post = get_object_or_404(Women, slug=post_slug)
+
     data = {
-        "title": post.title,    
-        "menu": menu,
-        "post": post,
-        "cat_selected": 1
+        'title': post.title,
+        'menu': menu,
+        'post': post,
+        'cat_selected': 1,
     }
-    return render(request, "women/post.html", context=data)
+
+    return render(request, 'women/post.html', data)
 
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == 'POST':
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+    else:
+        form = AddPostForm()        
+    form = AddPostForm()
+    data ={
+        'title': 'Добавление статьи',
+        'menu': menu,
+        'form': form,
+    }
+    return render(request, 'women/addpage.html', data)
 
 
 def contact(request):
@@ -140,26 +70,31 @@ def login(request):
 
 def show_category(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
-    data = {
-        "title": f"Категория {category.name} ",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": category.pk,
-    }
-    return render(request, "women/index.html", context=data)
+    posts = Women.published.filter(cat_id=category.pk).select_related("cat")
 
-def show_tag_postlist(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related('cat')
     data = {
-        "title": f"Тег {tag.tag} ",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": None,
+        'title': f'Рубрика: {category.name}',
+        'menu': menu,
+        'posts': posts,
+        'cat_selected': category.pk,
     }
-    return render(request, "women/index.html", context=data)
+    return render(request, 'women/index.html', context=data)
 
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+
+def show_tag_postlist(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
+
+    data = {
+        'title': f"Тег: {tag.tag}",
+        'menu': menu,
+        'posts': posts,
+        'cat_selected': None,
+    }
+
+    return render(request, 'women/index.html', context=data)
+

@@ -1,7 +1,6 @@
 from django.db import models
-from django.db.models import F, Q, Count, Case, When, Value, IntegerField
-from django.urls import reverse
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 
 
 def translit_to_eng(s: str) -> str:
@@ -21,20 +20,20 @@ class PublishedManager(models.Manager):
 
 class Women(models.Model):
     class Status(models.IntegerChoices):
-        DRAFT = 0, "Draft"
-        PUBLISHED = 1, "Published"
+        DRAFT = 0, 'Черновик'
+        PUBLISHED = 1, 'Опубликовано'
 
     title = models.CharField(max_length=255, verbose_name="Заголовок")
-    content = models.TextField(blank=True)
-    slug = models.SlugField(max_length=255, db_index=True, unique=True, verbose_name="SLUG")
-    time_create = models.DateTimeField(
-        auto_now_add=True
-    )  # მხოლოდ  პირველი აძლევს  და  მერე  არ ანახლებს
-    time_update = models.DateTimeField(auto_now=True)  # ყოველთვის   ანახლებს
-    is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)), default=Status.PUBLISHED)
-    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts")
-    tags = models.ManyToManyField("TagPost", blank=True, related_name="tags")
-    husband = models.OneToOneField("Husband", on_delete=models.SET_NULL, null=True, blank=True, related_name="wum")
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="Slug")
+    content = models.TextField(blank=True, verbose_name="Текст статьи")
+    time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
+    time_update = models.DateTimeField(auto_now=True, verbose_name="Время изменения")
+    is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)),
+                                       default=Status.DRAFT, verbose_name="Статус")
+    cat = models.ForeignKey('Category', on_delete=models.PROTECT, related_name='posts', verbose_name="Категории")
+    tags = models.ManyToManyField('TagPost', blank=True, related_name='tags', verbose_name="Теги")
+    husband = models.OneToOneField('Husband', on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name='wuman', verbose_name="Муж")
 
     objects = models.Manager()
     published = PublishedManager()
@@ -43,16 +42,15 @@ class Women(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = "Выдающиеся женщины"
-        verbose_name_plural = "Выдающиеся женщины"
-        ordering = ["-time_create"]
+        verbose_name = "Известные женщины"
+        verbose_name_plural = "Известные женщины"
+        ordering = ['-time_create']
         indexes = [
-            models.Index(fields=["-time_create"]),
+            models.Index(fields=['-time_create'])
         ]
 
     def get_absolute_url(self):
-        return reverse("post", kwargs={"post_slug": self.slug})
-    
+        return reverse('post', kwargs={'post_slug': self.slug})
 
     # def save(self, *args, **kwargs):
     #     self.slug = slugify(translit_to_eng(self.title))
@@ -60,33 +58,33 @@ class Women(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
-    slug = models.SlugField(max_length=255, unique=True)
+    name = models.CharField(max_length=100, db_index=True, verbose_name="Категория")
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("category", kwargs={"cat_slug": self.slug})
-    class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
-        ordering = ["id"]
+        return reverse('category', kwargs={'cat_slug': self.slug})
 
 
 class TagPost(models.Model):
     tag = models.CharField(max_length=100, db_index=True)
-    slug = models.SlugField(Women, unique=True, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
     def __str__(self):
         return self.tag
 
     def get_absolute_url(self):
-        return reverse("tag", kwargs={"tag_slug": self.slug})
-    
+        return reverse('tag', kwargs={'tag_slug': self.slug})
+
 
 class Husband(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100)
     age = models.IntegerField(null=True)
     m_count = models.IntegerField(blank=True, default=0)
 
